@@ -1,0 +1,22 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.5 (swiftlang-1300.0.31.1 clang-1300.0.29.1)
+// swift-module-flags: -target arm64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name ProxityKit
+import CoreLocation
+import Foundation
+@_exported import ProxityKit
+import SQLite3
+import Swift
+import _Concurrency
+public typealias Logger = (Swift.String) -> Swift.Void
+public protocol ProxityDelegate : AnyObject {
+  func content(_ client: ProxityKit.ProxityClient, messages ids: [Foundation.UUID])
+  func content(_ client: ProxityKit.ProxityClient, webhooks ids: [Foundation.UUID])
+}
+public class ProxityClient {
+  weak public var delegate: ProxityKit.ProxityDelegate?
+  public init?(apiKey: Swift.String, deviceId: Foundation.UUID, backend: Foundation.URL = URL(string: "https://api.proxity.eu")!, logger: ProxityKit.Logger? = nil, recreateDatabase: Swift.Bool = false)
+  public func beaconsRanged(_ rangedBeacons: [CoreLocation.CLBeacon], location: CoreLocation.CLLocation?)
+  public func syncRegions(for location: CoreLocation.CLLocation?, callback: @escaping ([CoreLocation.CLBeaconRegion]) -> Swift.Void)
+  public func dispatchWebhooks(ids: [Foundation.UUID], data: Swift.String?)
+  @objc deinit
+}

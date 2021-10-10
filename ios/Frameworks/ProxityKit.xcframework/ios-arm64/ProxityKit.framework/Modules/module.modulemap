@@ -1,0 +1,11 @@
+framework module ProxityKit {
+  umbrella header "ProxityKit.h"
+
+  export *
+  module * { export * }
+}
+
+module ProxityKit.Swift {
+    header "ProxityKit-Swift.h"
+    requires objc
+}
