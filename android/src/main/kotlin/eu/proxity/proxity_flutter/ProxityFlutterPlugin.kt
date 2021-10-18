@@ -7,7 +7,6 @@ import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import androidx.core.app.NotificationCompat
-import android.util.Log
 import java.util.*
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -26,7 +25,7 @@ class ProxityFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     private var webhooks: EventChannel.EventSink? = null
 
     private lateinit var context: Context
-    private lateinit var activity: Activity?
+    private var activity: Activity? = null
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "eu.proxity")
@@ -54,7 +53,11 @@ class ProxityFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
         when (call.method) {
             "initialize" -> {
-                Log.d("ProxityService", "initialize")
+                if (activity == null) {
+                    result.success(false)
+                    return
+                }
+
                 createNotificationChannel()
                 val notificationIntent = Intent(context, activity!!::class.java)
                 val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent,0)
@@ -77,7 +80,6 @@ class ProxityFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
                 result.success(true)
             }
             "start" -> {
-                Log.d("ProxityService", "start")
                 // TODO weak ref?
                 ProxityService.getInstance().proxityClient?.start {
                     Handler(Looper.getMainLooper()).post {
