@@ -26,7 +26,7 @@ class ProxityFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     private var webhooks: EventChannel.EventSink? = null
 
     private lateinit var context: Context
-    private lateinit var activity: Activity
+    private lateinit var activity: Activity?
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "eu.proxity")
@@ -54,8 +54,9 @@ class ProxityFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
         when (call.method) {
             "initialize" -> {
+                Log.d("ProxityService", "initialize")
                 createNotificationChannel()
-                val notificationIntent = Intent(context, activity::class.java)
+                val notificationIntent = Intent(context, activity!!::class.java)
                 val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent,0)
                 val notification = NotificationCompat.Builder(context, "ProxityService")
                     .setContentTitle("Proximity service")
@@ -76,9 +77,9 @@ class ProxityFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
                 result.success(true)
             }
             "start" -> {
+                Log.d("ProxityService", "start")
                 // TODO weak ref?
                 ProxityService.getInstance().proxityClient?.start {
-                    Log.d("Content", it.toString())
                     Handler(Looper.getMainLooper()).post {
                         if (it.messages.isNotEmpty()) {
                             messages?.success(it.messages)
@@ -153,6 +154,6 @@ class ProxityFlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onDetachedFromActivity() {
-        TODO("Not yet implemented")
+        activity = null
     }
 }

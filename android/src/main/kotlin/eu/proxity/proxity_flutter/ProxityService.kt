@@ -2,12 +2,9 @@ package eu.proxity.proxity_flutter
 
 import android.app.Notification
 import android.app.Service
-import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import androidx.core.content.ContextCompat.getSystemService
-import android.util.Log
 import java.util.*
 
 import eu.proxity.proxitykit.ProxityClient
